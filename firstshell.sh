@@ -1,4 +1,4 @@
-
+#installing nginx
 yum install nginx -y
 systemctl enable nginx
 rm -rf /usr/share/nginx/html/*
