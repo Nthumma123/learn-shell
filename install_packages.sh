@@ -8,7 +8,7 @@ R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
 N="\e[0m"
-
+#############################################
 if [ $USER_ID -ne 0 ] ; then
     echo -e "$R You should run this script as root user $N"
     exit 1
