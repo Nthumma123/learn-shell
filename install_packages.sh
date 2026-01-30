@@ -1,32 +1,40 @@
-#! /bin/bash
-directory="/var/log/learn-shell"
-file_path="$directory/$0.log"
-#status=$?
-set -e # checks error . if found it will exit. return error code ERR to kernal in background
-uid=$(id -u)
-if ((uid !=0)); then
-    echo "run as root user" | tee -a $file_path
-    exit 1
-fi
+#!/bin/bash
 
-mkdir -p $directory
-validate(){
-    if (($1 != 0)); then
-    echo "exit code $1, means $2 installation failure" | tee -a $file_path
+USER_ID = $(id -u)
+LOGS_FOLDER="/var/log/learn-shell"
+LOGS_FILE="$LOGS_FOLDER/$0.log"
+
+R="\e[31m"
+G="\e[32m"
+Y="\e[33m"
+N="\e[0m"
+
+if [ $USER_ID -ne 0 ] ; then
+    echo -e "$R You should run this script as root user $N"
     exit 1
-else
-    echo "status code $1, so $2 installationmeans successfull" | tee -a $file_path
-fi
+fi  
+
+mkdir -p $LOGS_FOLDER
+
+validate() {
+    if [$1 -ne 0 ] ; then
+        echo -e "$R FAILURE $N" | tee -a $LOGS_FILE
+        echo "Refer the log file $LOGS_FILE for more information" 
+        exit 1
+    else
+        echo -e "$G SUCCESS $N" | tee -a $LOGS_FILE
+    fi
 }
+
 for package in $@
 do
-    dnf list installed $package &>>$file_path
-    if (($? !=0)); then
-        echo "$package is not installed" | tee -a $file_path
-        dnf install  $package -y &>>$file_path
-        validate $? "Installing $package " | tee -a $file_path
+    dnf list installed $package &>>$LOGS_FILE
+    if [ $? != 0 ] ; then
+        echo "$package is not installed" | tee -a $LOGS_FILE
+        dnf install $package -y &>> $LOGS_FILE
+        validate $? "Installing $package " | tee -a $LOGS_FILE
     else
-        echo "$package is already installed"  | tee -a $file_path
+        echo "$package is already installed"  | tee -a $LOGS_FILE
     fi
 done
 
