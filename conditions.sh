@@ -20,3 +20,12 @@ else
     echo "script successfully executed"
 fi
 
+id -u
+if [ $? -ne 0 ] ; then
+    echo "script ended with errors"
+    exit 1
+else
+    echo "script successfully executed"
+fi     
+# check if the script executed successfully
+
